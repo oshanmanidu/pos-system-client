@@ -4,59 +4,71 @@
       <h1 class="page-title">Customers</h1>
       <p class="page-sub">{{ filtered().length }} total</p>
     </div>
-    <button mat-flat-button color="primary" class="add-btn">
+    <button mat-flat-button color="primary" class="add-btn" (click)="openAdd()">
       <mat-icon>person_add</mat-icon> Add customer
     </button>
   </div>
 
-  <!-- Search -->
   <div class="search-bar">
     <mat-icon class="search-icon">search</mat-icon>
     <input
       type="text"
-      placeholder="Search by name or email…"
+      placeholder="Search by name or contact…"
       [ngModel]="search()"
       (ngModelChange)="search.set($event)"
       class="search-input"
     />
   </div>
 
+  <!-- Loading -->
+  <div *ngIf="isLoading()" class="state-center">
+    <mat-spinner diameter="36"></mat-spinner>
+  </div>
+
+  <!-- Error -->
+  <div *ngIf="errorMsg() && !isLoading()" class="error-banner">
+    <mat-icon>error_outline</mat-icon> {{ errorMsg() }}
+    <button mat-button (click)="loadCustomers()">Retry</button>
+  </div>
+
   <!-- Table -->
-  <div class="table-card">
+  <div class="table-card" *ngIf="!isLoading() && !errorMsg()">
     <table class="data-table">
       <thead>
         <tr>
-          <th>Customer</th>
-          <th>Phone</th>
-          <th>Joined</th>
-          <th>Status</th>
+          <th>Name</th>
+          <th>Address</th>
+          <th>Salary</th>
+          <th>Contact</th>
           <th></th>
         </tr>
       </thead>
       <tbody>
-        <tr *ngFor="let c of filtered()" matRipple>
+        <tr *ngFor="let c of filtered()">
           <td class="customer-cell">
             <div class="avatar">{{ initials(c.name) }}</div>
-            <div>
-              <div class="customer-name">{{ c.name }}</div>
-              <div class="customer-email">{{ c.email }}</div>
-            </div>
+            <span class="customer-name">{{ c.name }}</span>
           </td>
-          <td class="muted">{{ c.phone }}</td>
-          <td class="muted">{{ c.joined | date:'d MMM y' }}</td>
-          <td>
-            <span class="badge" [class.badge--active]="c.status === 'active'"
-                                [class.badge--inactive]="c.status === 'inactive'">
-              {{ c.status }}
-            </span>
-          </td>
+          <td class="muted">{{ c.address }}</td>
+          <td><strong>{{ c.salary }}</strong></td>
+          <td class="muted">{{ c.contact }}</td>
           <td class="action-cell">
-            <button mat-icon-button><mat-icon>more_vert</mat-icon></button>
+            <button mat-icon-button [matMenuTriggerFor]="menu">
+              <mat-icon>more_vert</mat-icon>
+            </button>
+            <mat-menu #menu="matMenu">
+              <button mat-menu-item (click)="openEdit(c)">
+                <mat-icon>edit</mat-icon> Edit
+              </button>
+              <button mat-menu-item class="delete-item" (click)="deleteCustomer(c)">
+                <mat-icon>delete_outline</mat-icon> Delete
+              </button>
+            </mat-menu>
           </td>
         </tr>
 
         <tr *ngIf="filtered().length === 0">
-          <td colspan="5" class="empty-row">No customers match your search.</td>
+          <td colspan="5" class="empty-row">No customers found.</td>
         </tr>
       </tbody>
     </table>

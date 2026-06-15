@@ -1,5 +1,6 @@
 import { Routes } from '@angular/router';
 import { Login } from './pages/login/login';
+import { Signup } from './pages/signup/signup';           // ← add
 import { NotFound } from './pages/not-found/not-found';
 import { DashboardContext } from './pages/dashboard-context/dashboard-context';
 import { DashboardCustomerPage } from './pages/dashboard-customer-page/dashboard-customer-page';
@@ -8,17 +9,19 @@ import { DashboardOrdersPage } from './pages/dashboard-orders-page/dashboard-ord
 import { authGuard } from './components/guards/auth-guard';
 
 export const routes: Routes = [
-    { path: '', redirectTo: '/login', pathMatch: 'full' },
-    { path: 'login', component: Login },
-    { path: 'dashboard', component: DashboardContext,  children: [
-        { path: '', redirectTo: '/dashboard/customers', pathMatch: 'full' },
-        { path: 'customers', component: DashboardCustomerPage },
-        { path: 'products', component: DashboardProductPage },
-        { path: 'orders', component: DashboardOrdersPage }
-
-
-
-    ]
-     }, // Ensure Dashboard and authGuard are imported correctly
-    { path: '**', component: NotFound } // Ensure casing matches the import!
+  { path: '',       redirectTo: '/login', pathMatch: 'full' },
+  { path: 'login',  component: Login  },
+  { path: 'signup', component: Signup },                  // ← add
+  {
+    path: 'dashboard',
+    component: DashboardContext,
+    canActivate: [authGuard],
+    children: [
+      { path: '',          redirectTo: '/dashboard/customers', pathMatch: 'full' },
+      { path: 'customers', component: DashboardCustomerPage },
+      { path: 'products',  component: DashboardProductPage  },
+      { path: 'orders',    component: DashboardOrdersPage   },
+    ],
+  },
+  { path: '**', component: NotFound },
 ];

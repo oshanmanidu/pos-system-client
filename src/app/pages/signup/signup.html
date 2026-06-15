@@ -2,15 +2,22 @@
   <div class="wrapper">
 
     <div class="brand">▲ NexusOps</div>
-    <h4 class="title">Login</h4>
+    <h4 class="title">Create account</h4>
 
     <div *ngIf="errorMsg" class="error-banner">{{ errorMsg }}</div>
 
-    <form [formGroup]="form" (ngSubmit)="login()">
+    <form [formGroup]="form" (ngSubmit)="signup()">
+
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Full name</mat-label>
+        <input matInput formControlName="fullName" placeholder="e.g. Amara Silva" />
+        <mat-error *ngIf="form.get('fullName')?.hasError('required')">Name is required.</mat-error>
+        <mat-error *ngIf="form.get('fullName')?.hasError('minlength')">At least 2 characters.</mat-error>
+      </mat-form-field>
 
       <mat-form-field appearance="outline" class="full-width">
         <mat-label>Email</mat-label>
-        <input matInput formControlName="email" type="email" placeholder="e.g. pat@example.com" />
+        <input matInput formControlName="email" type="email" placeholder="e.g. amara@example.com" />
         <mat-error *ngIf="form.get('email')?.hasError('required')">Email is required.</mat-error>
         <mat-error *ngIf="form.get('email')?.hasError('email')">Enter a valid email address.</mat-error>
       </mat-form-field>
@@ -30,13 +37,13 @@
         [disabled]="form.invalid || isLoading"
       >
         <mat-spinner *ngIf="isLoading" diameter="18"></mat-spinner>
-        <span *ngIf="!isLoading">Log In</span>
+        <span *ngIf="!isLoading">Sign up</span>
       </button>
 
     </form>
 
     <p class="footer-link">
-      Don't have an account? <a routerLink="/signup">Sign up</a>
+      Already have an account? <a routerLink="/login">Log in</a>
     </p>
 
   </div>

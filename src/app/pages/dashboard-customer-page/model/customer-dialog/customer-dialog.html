@@ -1,1 +1,62 @@
-<p>customer-dialog works!</p>
+<div class="dialog-shell">
+
+  <div class="dialog-header">
+    <h2 class="dialog-title">{{ title }}</h2>
+    <button mat-icon-button class="close-btn" (click)="cancel()">
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+
+  <div *ngIf="errorMsg" class="error-banner">
+    <mat-icon>error_outline</mat-icon>
+    {{ errorMsg }}
+  </div>
+
+  <form [formGroup]="form" (ngSubmit)="submit()" class="dialog-form">
+
+    <!-- ✅ name (was fullName) -->
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Full name</mat-label>
+      <input matInput formControlName="name" placeholder="e.g. Amara Silva" />
+      <mat-error *ngIf="form.get('name')?.hasError('required')">Name is required.</mat-error>
+      <mat-error *ngIf="form.get('name')?.hasError('minlength')">Must be at least 2 characters.</mat-error>
+    </mat-form-field>
+
+    <!-- ✅ address (new) -->
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Address</mat-label>
+      <input matInput formControlName="address" placeholder="e.g. 12 Main St, Colombo" />
+      <mat-error *ngIf="form.get('address')?.hasError('required')">Address is required.</mat-error>
+    </mat-form-field>
+
+    <!-- ✅ salary (new, replaces email) -->
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Salary</mat-label>
+      <input matInput formControlName="salary" type="text" placeholder="e.g. 75000" />
+      <mat-error *ngIf="form.get('salary')?.hasError('required')">Salary is required.</mat-error>
+      <mat-error *ngIf="form.get('salary')?.hasError('pattern')">Enter a valid number (e.g. 75000 or 750.50).</mat-error>
+    </mat-form-field>
+
+    <!-- ✅ contact (was phone) -->
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Contact</mat-label>
+      <input matInput formControlName="contact" type="tel" placeholder="e.g. +94 77 123 4567" />
+      <mat-error *ngIf="form.get('contact')?.hasError('required')">Contact number is required.</mat-error>
+      <mat-error *ngIf="form.get('contact')?.hasError('pattern')">Enter a valid phone number.</mat-error>
+    </mat-form-field>
+
+    <div class="dialog-actions">
+      <button type="button" mat-stroked-button (click)="cancel()">Cancel</button>
+      <button
+        type="submit"
+        mat-flat-button
+        color="primary"
+        [disabled]="form.invalid || isLoading"
+      >
+        <mat-spinner *ngIf="isLoading" diameter="18"></mat-spinner>
+        <span *ngIf="!isLoading">{{ isEditMode ? 'Save changes' : 'Add customer' }}</span>
+      </button>
+    </div>
+
+  </form>
+</div>

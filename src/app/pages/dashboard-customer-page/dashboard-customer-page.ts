@@ -1,46 +1,86 @@
-import { Component, signal, computed } from '@angular/core';
+import { Component, inject, OnInit, signal, computed, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { MatDialog } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatRippleModule } from '@angular/material/core';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatMenuModule } from '@angular/material/menu';
 
-export interface Customer {
-  id: number;
-  name: string;
-  email: string;
-  phone: string;
-  status: 'active' | 'inactive';
-  joined: string;
-}
+import { CustomerService, Customer } from '../../services/customer';
+import { CustomerDialog } from './model/customer-dialog/customer-dialog';
 
 @Component({
   selector: 'app-dashboard-customer-page',
   standalone: true,
-  imports: [CommonModule, FormsModule, MatIconModule, MatButtonModule, MatRippleModule],
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [
+    CommonModule,
+    FormsModule,
+    MatIconModule,
+    MatButtonModule,
+    MatRippleModule,
+    MatProgressSpinnerModule,
+    MatMenuModule,
+  ],
   templateUrl: './dashboard-customer-page.html',
   styleUrl: './dashboard-customer-page.scss',
 })
-export class DashboardCustomerPage {
-  search = signal('');
+export class DashboardCustomerPage implements OnInit {
+  private customerService = inject(CustomerService);
+  private dialog          = inject(MatDialog);
 
-  customers = signal<Customer[]>([
-    { id: 1, name: 'Amara Silva',    email: 'amara@example.com',  phone: '+94 77 123 4567', status: 'active',   joined: '2024-01-15' },
-    { id: 2, name: 'Dinesh Perera',  email: 'dinesh@example.com', phone: '+94 71 234 5678', status: 'active',   joined: '2024-02-20' },
-    { id: 3, name: 'Kavya Mendis',   email: 'kavya@example.com',  phone: '+94 76 345 6789', status: 'inactive', joined: '2023-11-05' },
-    { id: 4, name: 'Rajan Fernando', email: 'rajan@example.com',  phone: '+94 70 456 7890', status: 'active',   joined: '2024-03-10' },
-    { id: 5, name: 'Nisha Wijesinghe',email:'nisha@example.com',  phone: '+94 72 567 8901', status: 'active',   joined: '2024-04-02' },
-  ]);
+  customers = signal<Customer[]>([]);
+  isLoading = signal(false);
+  errorMsg  = signal('');
+  search    = signal('');
 
   filtered = computed(() => {
     const q = this.search().toLowerCase();
     return q
       ? this.customers().filter(c =>
-          c.name.toLowerCase().includes(q) || c.email.toLowerCase().includes(q))
+          c.name.toLowerCase().includes(q) ||      // ✅ was c.fullName
+          c.contact.toLowerCase().includes(q))     // ✅ was c.email
       : this.customers();
   });
 
-  initials(name: string): string {
+  ngOnInit(): void {
+    this.loadCustomers();
+  }
+
+  loadCustomers(): void {
+    this.isLoading.set(true);
+    this.errorMsg.set('');
+    this.customerService.getAll().subscribe({
+      next:  (res) => { this.customers.set(res.data); this.isLoading.set(false); },
+      error: (err) => { this.errorMsg.set(err?.error?.message ?? 'Failed to load customers.'); this.isLoading.set(false); },
+    });
+  }
+
+  openAdd(): void {
+    const ref = this.dialog.open(CustomerDialog, { data: {}, width: '480px', panelClass: 'nexus-dialog' });
+    ref.afterClosed().subscribe((saved: Customer | null) => {
+      if (saved) this.customers.update(list => [saved, ...list]);
+    });
+  }
+
+  openEdit(customer: Customer): void {
+    const ref = this.dialog.open(CustomerDialog, { data: { customer }, width: '480px', panelClass: 'nexus-dialog' });
+    ref.afterClosed().subscribe((saved: Customer | null) => {
+      if (saved) this.customers.update(list => list.map(c => c._id === saved._id ? saved : c));
+    });
+  }
+
+  deleteCustomer(customer: Customer): void {
+    if (!confirm(`Delete ${customer.name}? This cannot be undone.`)) return; // ✅ was customer.fullName
+    this.customerService.delete(customer._id!).subscribe({
+      next:  () => this.customers.update(list => list.filter(c => c._id !== customer._id)),
+      error: (err) => alert(err?.error?.message ?? 'Delete failed.'),
+    });
+  }
+
+  initials(name: string): string { // ✅ parameter unchanged, but caller now passes c.name not c.fullName
     return name.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase();
   }
 }

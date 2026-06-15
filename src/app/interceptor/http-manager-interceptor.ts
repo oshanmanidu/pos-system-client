@@ -6,22 +6,23 @@ import { catchError, finalize, throwError } from 'rxjs';
 import { F } from '@angular/cdk/keycodes';
 import { CookieManagerService } from '../services/cookie-manager';
 
+const TOKEN_KEY = 'auth_token';
+
 export const httpManagerInterceptor: HttpInterceptorFn = (req, next) => {
   let statusService:LoadingStatus = inject(LoadingStatus);
   const  cookieManager = inject(CookieManagerService);
-  const token = cookieManager.getToken('token');
+  const token = cookieManager.getToken(TOKEN_KEY) ?? cookieManager.getToken('token');
   statusService.status.next(true);
 
-  if(token){
-    const clonedReq = req.clone({
-      setHeaders:{
-        Authorization: `Bearer ${token}`
-      }
-    });
-    return next(clonedReq);
-  }
+  const authenticatedReq = token
+    ? req.clone({
+        setHeaders: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
+    : req;
 
-  return next(req).pipe(
+  return next(authenticatedReq).pipe(
     catchError((error:HttpErrorResponse)=>{
       return throwError(()=>error)
     }),

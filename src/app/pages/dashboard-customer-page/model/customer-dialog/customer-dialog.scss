@@ -1,0 +1,79 @@
+$accent:  #4f7df3;
+$text:    #1a1d23;
+$muted:   #7a8099;
+$border:  #e8eaee;
+$radius:  10px;
+$error-bg:#fdecea;
+$error-fg:#c0392b;
+
+.dialog-shell {
+  display: flex;
+  flex-direction: column;
+  width: 440px;
+  max-width: 100%;
+  padding: 0;
+  font-family: 'Inter', sans-serif;
+}
+
+// ── Header ───────────────────────────────────────────────────────
+.dialog-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 24px 0;
+}
+
+.dialog-title {
+  font-size: 17px;
+  font-weight: 700;
+  color: $text;
+  margin: 0;
+}
+
+.close-btn {
+  color: $muted;
+  margin-right: -8px;
+}
+
+// ── Error banner ─────────────────────────────────────────────────
+.error-banner {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 16px 24px 0;
+  padding: 10px 14px;
+  border-radius: 8px;
+  background: $error-bg;
+  color: $error-fg;
+  font-size: 13px;
+
+  mat-icon { font-size: 18px; width: 18px; height: 18px; }
+}
+
+// ── Form ─────────────────────────────────────────────────────────
+.dialog-form {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 20px 24px 24px;
+}
+
+.full-width { width: 100%; }
+
+// ── Actions ──────────────────────────────────────────────────────
+.dialog-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 8px;
+
+  button {
+    min-width: 120px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+  }
+
+  mat-spinner { display: inline-flex; }
+}
