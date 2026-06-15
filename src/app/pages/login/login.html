@@ -1,24 +1,57 @@
 <div class="context">
-    <div class="wrapper">
-        <h4>Login</h4>
-        <hr>
-        <form [formGroup]="form"(ngSubmit)="login()">
-            <mat-form-field  class="full-width" appearance="outline">
-                <mat-label>Email</mat-label>
-                <input formControlName="email" type="email" matInput 
-                    placeholder="Ex. pat@example.com">
-                
-            </mat-form-field>
+  <div class="wrapper">
+    <h4>Login</h4>
+    <hr />
 
-            <mat-form-field  class="full-width" appearance="outline">
-                <mat-label>Password</mat-label>
-                <input formControlName="password" type="password" matInput 
-                    placeholder="Ex. 1235abc">
-                
-            </mat-form-field>
-
-            <button type="submit" [disabled]="form.invalid" class="col-12" matButton="filled">LogIn </button>
-
-        </form>
+    <!-- Error banner -->
+    <div *ngIf="errorMsg" class="error-banner">
+      {{ errorMsg }}
     </div>
+
+    <form [formGroup]="form" (ngSubmit)="login()">
+      <mat-form-field class="full-width" appearance="outline">
+        <mat-label>Email</mat-label>
+        <input
+          formControlName="email"
+          type="email"
+          matInput
+          placeholder="Ex. pat@example.com"
+        />
+        <mat-error *ngIf="form.get('email')?.hasError('required')">
+          Email is required.
+        </mat-error>
+        <mat-error *ngIf="form.get('email')?.hasError('email')">
+          Enter a valid email address.
+        </mat-error>
+      </mat-form-field>
+
+      <mat-form-field class="full-width" appearance="outline">
+        <mat-label>Password</mat-label>
+        <input
+          formControlName="password"
+          type="password"
+          matInput
+          placeholder="Min. 6 characters"
+        />
+        <mat-error *ngIf="form.get('password')?.hasError('required')">
+          Password is required.
+        </mat-error>
+        <mat-error *ngIf="form.get('password')?.hasError('minlength')">
+          Password must be at least 6 characters.
+        </mat-error>
+      </mat-form-field>
+
+      <!-- ✅ FIX: matButton="filled" is not valid — use mat-flat-button directive -->
+      <button
+        mat-flat-button
+        color="primary"
+        type="submit"
+        [disabled]="form.invalid || isLoading"
+        class="col-12"
+      >
+        <mat-spinner *ngIf="isLoading" diameter="20"></mat-spinner>
+        <span *ngIf="!isLoading">Log In</span>
+      </button>
+    </form>
+  </div>
 </div>
