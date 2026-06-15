@@ -1,1 +1,47 @@
-<p>dashboard-context works!</p>
+<div class="shell" [class.collapsed]="sidebarCollapsed()">
+
+  <!-- ─── Sidebar ─────────────────────────────────────────────── -->
+  <aside class="sidebar">
+    <div class="sidebar-header">
+      <span class="brand-mark">▲</span>
+      <span class="brand-name">NexusOps</span>
+    </div>
+
+    <nav class="nav-list">
+      <a
+        *ngFor="let item of navItems"
+        [routerLink]="item.route"
+        routerLinkActive="active"
+        matRipple
+        class="nav-item"
+        [matTooltip]="sidebarCollapsed() ? item.label : ''"
+        matTooltipPosition="right"
+      >
+        <mat-icon>{{ item.icon }}</mat-icon>
+        <span class="nav-label">{{ item.label }}</span>
+      </a>
+    </nav>
+
+    <div class="sidebar-footer">
+      <button class="nav-item logout-btn" (click)="logout()" matRipple
+        [matTooltip]="sidebarCollapsed() ? 'Log out' : ''" matTooltipPosition="right">
+        <mat-icon>logout</mat-icon>
+        <span class="nav-label">Log out</span>
+      </button>
+    </div>
+  </aside>
+
+  <!-- ─── Main content ─────────────────────────────────────────── -->
+  <div class="main">
+    <header class="topbar">
+      <button class="collapse-btn" (click)="toggleSidebar()" matRipple>
+        <mat-icon>{{ sidebarCollapsed() ? 'menu_open' : 'menu' }}</mat-icon>
+      </button>
+    </header>
+
+    <div class="page-content">
+      <router-outlet />
+    </div>
+  </div>
+
+</div>

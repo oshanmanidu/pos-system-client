@@ -1,1 +1,64 @@
-<p>dashboard-customer-page works!</p>
+<div class="page">
+  <div class="page-header">
+    <div>
+      <h1 class="page-title">Customers</h1>
+      <p class="page-sub">{{ filtered().length }} total</p>
+    </div>
+    <button mat-flat-button color="primary" class="add-btn">
+      <mat-icon>person_add</mat-icon> Add customer
+    </button>
+  </div>
+
+  <!-- Search -->
+  <div class="search-bar">
+    <mat-icon class="search-icon">search</mat-icon>
+    <input
+      type="text"
+      placeholder="Search by name or email…"
+      [ngModel]="search()"
+      (ngModelChange)="search.set($event)"
+      class="search-input"
+    />
+  </div>
+
+  <!-- Table -->
+  <div class="table-card">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>Customer</th>
+          <th>Phone</th>
+          <th>Joined</th>
+          <th>Status</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let c of filtered()" matRipple>
+          <td class="customer-cell">
+            <div class="avatar">{{ initials(c.name) }}</div>
+            <div>
+              <div class="customer-name">{{ c.name }}</div>
+              <div class="customer-email">{{ c.email }}</div>
+            </div>
+          </td>
+          <td class="muted">{{ c.phone }}</td>
+          <td class="muted">{{ c.joined | date:'d MMM y' }}</td>
+          <td>
+            <span class="badge" [class.badge--active]="c.status === 'active'"
+                                [class.badge--inactive]="c.status === 'inactive'">
+              {{ c.status }}
+            </span>
+          </td>
+          <td class="action-cell">
+            <button mat-icon-button><mat-icon>more_vert</mat-icon></button>
+          </td>
+        </tr>
+
+        <tr *ngIf="filtered().length === 0">
+          <td colspan="5" class="empty-row">No customers match your search.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>

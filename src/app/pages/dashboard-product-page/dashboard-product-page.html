@@ -1,1 +1,47 @@
-<p>dashboard-product-page works!</p>
+<div class="page">
+  <div class="page-header">
+    <div>
+      <h1 class="page-title">Products</h1>
+      <p class="page-sub">{{ filtered().length }} items</p>
+    </div>
+    <button mat-flat-button color="primary" class="add-btn">
+      <mat-icon>add</mat-icon> Add product
+    </button>
+  </div>
+
+  <div class="search-bar">
+    <mat-icon class="search-icon">search</mat-icon>
+    <input
+      type="text"
+      placeholder="Search by name, SKU, or category…"
+      [ngModel]="search()"
+      (ngModelChange)="search.set($event)"
+      class="search-input"
+    />
+  </div>
+
+  <div class="product-grid">
+    <div class="product-card" *ngFor="let p of filtered()" matRipple>
+      <div class="product-icon">
+        <mat-icon>inventory_2</mat-icon>
+      </div>
+      <div>
+        <div class="product-name">{{ p.name }}</div>
+        <div class="product-sku">{{ p.sku }} · {{ p.category }}</div>
+      </div>
+      <div class="product-footer">
+        <div>
+          <div class="product-price">${{ p.price | number:'1.2-2' }}</div>
+          <div class="product-stock">{{ p.stock }} units</div>
+        </div>
+        <span class="badge" [ngClass]="badgeClass(p.stockStatus)">
+          {{ stockLabel(p.stockStatus) }}
+        </span>
+      </div>
+    </div>
+
+    <div *ngIf="filtered().length === 0" class="empty-row" style="grid-column:1/-1">
+      No products match your search.
+    </div>
+  </div>
+</div>

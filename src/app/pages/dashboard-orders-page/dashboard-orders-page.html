@@ -1,1 +1,79 @@
-<p>dashboard-orders-page works!</p>
+<div class="page">
+  <div class="page-header">
+    <div>
+      <h1 class="page-title">Orders</h1>
+      <p class="page-sub">{{ filtered().length }} orders</p>
+    </div>
+    <button mat-flat-button color="primary" class="add-btn">
+      <mat-icon>add</mat-icon> New order
+    </button>
+  </div>
+
+  <!-- Summary stats -->
+  <div class="stats-row">
+    <div class="stat-card">
+      <div class="stat-label">Total revenue</div>
+      <div class="stat-value">${{ total() | number:'1.2-2' }}</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Pending</div>
+      <div class="stat-value">{{ pending() }}</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Shipped</div>
+      <div class="stat-value">{{ shipped() }}</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Delivered</div>
+      <div class="stat-value">{{ delivered() }}</div>
+    </div>
+  </div>
+
+  <!-- Search -->
+  <div class="search-bar">
+    <mat-icon class="search-icon">search</mat-icon>
+    <input
+      type="text"
+      placeholder="Search by order ID, customer, or product…"
+      [ngModel]="search()"
+      (ngModelChange)="search.set($event)"
+      class="search-input"
+    />
+  </div>
+
+  <!-- Table -->
+  <div class="table-card">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>Order</th>
+          <th>Customer</th>
+          <th>Product</th>
+          <th>Amount</th>
+          <th>Date</th>
+          <th>Status</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let o of filtered()" matRipple>
+          <td><strong>{{ o.id }}</strong></td>
+          <td>{{ o.customer }}</td>
+          <td class="muted">{{ o.product }}</td>
+          <td><strong>${{ o.amount | number:'1.2-2' }}</strong></td>
+          <td class="muted">{{ o.date | date:'d MMM y' }}</td>
+          <td>
+            <span class="badge" [ngClass]="badgeClass(o.status)">{{ o.status }}</span>
+          </td>
+          <td class="action-cell">
+            <button mat-icon-button><mat-icon>more_vert</mat-icon></button>
+          </td>
+        </tr>
+
+        <tr *ngIf="filtered().length === 0">
+          <td colspan="7" class="empty-row">No orders match your search.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
